@@ -153,6 +153,30 @@ define KernelPackage/mac80211/config
 		bool "Enable 802.11s mesh support"
 		default y
 
+	config PACKAGE_MAC80211_ENABLE
+		bool "Enable all WiFi modules by default"
+		default n
+
+	config PACKAGE_MAC80211_COUNTRY
+		string
+		prompt "Country (RegDomain)"
+		default ""
+
+	config PACKAGE_MAC80211_SSID
+		string
+		prompt "Default WiFi SSID prefix"
+		default ""
+
+	config PACKAGE_MAC80211_ENCRYPTION
+		string
+		prompt "Default WiFi encryption type"
+		default ""
+
+	config PACKAGE_MAC80211_PASSWORD
+		string
+		prompt "Default WiFi password"
+		default ""
+
   endif
 endef
 
