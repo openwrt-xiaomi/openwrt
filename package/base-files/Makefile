@@ -193,6 +193,15 @@ define Package/base-files/install
 		$(1)/etc/preinit \
 		$(1)/etc/profile
 
+	$(if $(CONFIG_PACKAGE_MAC80211_ENABLE), \
+		$(SED) "s#%ENABLE%#y#g" \
+			-e "s#%SSID%#$(CONFIG_PACKAGE_MAC80211_SSID)#g" \
+			-e "s#%ENCRYPTION%#$(CONFIG_PACKAGE_MAC80211_ENCRYPTION)#g" \
+			-e "s#%KEY%#$(CONFIG_PACKAGE_MAC80211_PASSWORD)#g" \
+			-e "s#%COUNTRY%#$(CONFIG_PACKAGE_MAC80211_COUNTRY)#g" \
+			$(1)/etc/uci-defaults/77_wireless \
+	)
+
 	mkdir -p \
 		$(1)/CONTROL \
 		$(1)/dev \
