@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+[ ! -e /etc/config/wireless ] && exit 0
+
+. /lib/functions.sh
+. /lib/functions/system.sh
+
+board=$(board_name)
+
+radio_en=%ENABLE%
+[ "$radio_en" != "y" ] && exit 0
+
+radio_enable() {
+	local num=$1
+	local ssid=%SSID%
+	local encryption=%ENCRYPTION%
+	local key=%KEY%
+	local country=%COUNTRY%
+	uci set wireless.radio$num.disabled=0
+	if [ -n "$country" ]; then
+		uci set wireless.radio$num.country=$country
+	fi
+	if [ -z "$ssid" ]; then
+		ssid=$board-wifi-$num
+	fi
+	ssid=$( echo "$ssid" | sed -r 's/[\.\,:]+/-/g' )
+	uci set wireless.default_radio$num.ssid=$ssid
+	if [ -n "$key" ]; then
+		[ -z "$encryption" ] && encryption=psk2
+		uci set wireless.default_radio$num.encryption=$encryption
+		uci set wireless.default_radio$num.key=$key
+	fi
+}
+
+[ $(uci -q get wireless.radio0.type) ] && radio_enable 0
+[ $(uci -q get wireless.radio1.type) ] && radio_enable 1
+uci -q commit wireless
+
+exit 0
