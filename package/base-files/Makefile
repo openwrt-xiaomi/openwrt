@@ -196,6 +196,11 @@ define Package/base-files/install
 		cat $(BIN_DIR)/feeds.buildinfo >>$(1)/etc/build.feeds; \
 		cat $(BIN_DIR)/version.buildinfo >>$(1)/etc/build.version)
 
+	$(if $(wildcard $(TOPDIR)/luci_aux_menu.json), \
+		mkdir -p $(1)/usr/share/luci ;\
+		cat $(TOPDIR)/luci_aux_menu.json > $(1)/usr/share/luci/aux_menu.json ;\
+	)
+
 	$(if $(CONFIG_CLEAN_IPKG),, \
 		mkdir -p $(1)/etc/opkg; \
 		$(call FeedSourcesAppend,$(1)/etc/opkg/distfeeds.conf); \

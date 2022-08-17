@@ -1,0 +1,120 @@
+*** dispatcher.lua	    2022-08-16 13:06:18.484131500 +0000
+--- dispatcher.new.lua	2022-08-16 13:08:09.463823000 +0000
+*************** local function apply_tree_acls(node, acl
+*** 689,694 ****
+--- 689,793 ----
+  	end
+  end
+  
++ function aux_menu(menu)
++ 	local json = require "luci.jsonc"
++ 	--local f = nixio.open("/tmp/menu1.json", "w", 600)
++ 	--f:writeall(json.stringify(menu))
++ 	--f:close()
++ 
++ 	if not menu.children.admin then
++ 		return menu
++ 	end
++ 	if not menu.children.admin.children then
++ 		return menu
++ 	end
++ 	
++ 	local aux_data = fs.readfile("/usr/share/luci/aux_menu.json") or ""
++ 	if aux_data == "" then
++ 		return menu
++ 	end
++ 	
++ 	local aux = json.parse(aux_data)
++ 	if type(aux) ~= "table" then
++ 		nixio.syslog("info", "luci: File aux_menu.json is incorrect!\n")
++ 		return menu
++ 	end
++ 	local nm_name = next(aux)
++ 	if not nm_name then
++ 		nixio.syslog("info", "luci: File aux_menu.json is Incorrect\n")
++ 		return menu
++ 	end
++ 
++ 	for nm_name, nm_v in pairs(aux) do
++ 		local nm_title = nm_v.title
++ 		local nm_order = nm_v.order
++ 		local nm_items = nm_v.items
++ 		--io.stderr:write("luci: aux_menu first menu = '%s' '%s' %d \n" % { nm_name, nm_title, nm_order})
++ 
++ 		local nm = menu.children.admin.children[nm_name]
++ 		if nm then
++ 			if nm.action.type ~= "firstchild" then
++ 				nixio.syslog("info", tostring("luci: ERROR: incorrect '%s' menu type!\n" % nm_name))
++ 				return menu
++ 			end
++ 			--io.stderr:write("luci: '%s' menu already exist!\n" % nm_name)
++ 			nm.satisfied = true
++ 			nm.title = nm_title
++ 			nm.order = nm_order
++ 			nm.action.recurse = true
++ 		else
++ 			--io.stderr:write("luci: NAS menu NOT fouded!\n")
++ 			nm = {
++ 				satisfied = true,
++ 				title = nm_title,
++ 				order = nm_order,
++ 				action = {
++ 					type = "firstchild",
++ 					recurse = true
++ 				},
++ 				children = {}
++ 			}
++ 		end
++ 
++ 		for order, v in ipairs(nm_items) do
++ 			local k = v[2]
++ 			--io.stderr:write("luci: %d = %s \n" % { order, k })
++ 			if nm.children[k] then
++ 				--submenu already exist. Skip
++ 				nm.children[k].order = order
++ 			elseif #v > 1 then
++ 				local k1 = v[1]
++ 				local k2 = v[2]
++ 				if menu.children.admin.children[k1] then
++ 					if menu.children.admin.children[k1].children[k2] then
++ 						nm.children[k] = menu.children.admin.children[k1].children[k2]
++ 						nm.children[k].order = order
++ 						if nm.children[k].action.path then
++ 							--io.stderr:write("luci: key = '%s' orig path = %s \n" % { k, nm.children[k].action.path })
++ 							local p = {}
++ 							for name in nm.children[k].action.path:gmatch("[^/]+") do
++ 								p[#p + 1] = name
++ 							end
++ 							if #p > 2 and p[1] == "admin" and p[2] == k1 then
++ 								p[2] = nm_name
++ 								p[3] = k
++ 								nm.children[k].action.path = table.concat(p, "/")
++ 								--io.stderr:write("luci: %s = %s (%d)\n" % { k, nm.children[k].action.path, #p })
++ 							end
++ 						end
++ 						menu.children.admin.children[k1].children[k2] = nil
++ 					end
++ 				end
++ 			end
++ 		end
++ 		menu.children.admin.children[nm_name] = nm
++ 	end
++ 	--f = nixio.open("/tmp/menu2.json", "w", 600)
++ 	--f:writeall(json.stringify(menu))
++ 	--f:close()
++ 	return menu
++ end
++ 
+  function menu_json(acl)
+  	local tree = context.tree or createtree()
+  	local lua_tree = tree_to_json(tree, {
+*************** function menu_json(acl)
+*** 700,705 ****
+--- 799,805 ----
+  
+  	local json_tree = createtree_json()
+  	local menu_tree = merge_trees(lua_tree, json_tree)
++ 	menu_tree = aux_menu(menu_tree)
+  
+  	if acl then
+  		apply_tree_acls(menu_tree, acl)
