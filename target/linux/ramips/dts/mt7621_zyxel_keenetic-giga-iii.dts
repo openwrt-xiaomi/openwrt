@@ -10,7 +10,7 @@
 	model = "ZyXEL Keenetic Giga III";
 
 	aliases {
-		label-mac-device = &wan;
+		label-mac-device = &gmac1;
 		led-boot = &led_power;
 		led-failsafe = &led_power;
 		led-running = &led_power;
@@ -262,22 +262,27 @@
 			status = "okay";
 			label = "lan1";
 		};
-
-		wan: port@4 {
-			status = "okay";
-			label = "wan";
-		};
 	};
-};
-
-&wan {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
 };
 
 &gmac0 {
 	nvmem-cells = <&macaddr_factory_4>;
 	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy4>;
+
+	nvmem-cells = <&macaddr_factory_28>;
+	nvmem-cell-names = "mac-address";
+};
+
+&mdio {
+	ethphy4: ethernet-phy@4 {
+		reg = <4>;
+	};
 };
 
 &state_default {
