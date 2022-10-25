@@ -1,0 +1,79 @@
+--- a/arch/arm/boot/dts/qcom-ipq8064-ap148.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-ap148.dts
+@@ -1,4 +1,4 @@
+-#include "qcom-ipq8064-v1.0.dtsi"
++#include "qcom-ipq8064-v1.0-smb208.dtsi"
+ 
+ / {
+ 	model = "Qualcomm Technologies, Inc. IPQ8064/AP-148";
+--- a/arch/arm/boot/dts/qcom-ipq8064-ap161.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-ap161.dts
+@@ -1,4 +1,4 @@
+-#include "qcom-ipq8064-v1.0.dtsi"
++#include "qcom-ipq8064-v1.0-smb208.dtsi"
+ 
+ / {
+ 	model = "Qualcomm IPQ8064/AP161";
+--- a/arch/arm/boot/dts/qcom-ipq8064-db149.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-db149.dts
+@@ -1,4 +1,4 @@
+-#include "qcom-ipq8064-v1.0.dtsi"
++#include "qcom-ipq8064-v1.0-smb208.dtsi"
+ 
+ / {
+ 	model = "Qualcomm IPQ8064/DB149";
+--- a/arch/arm/boot/dts/qcom-ipq8064-r7500.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-r7500.dts
+@@ -1,4 +1,4 @@
+-#include "qcom-ipq8064-v1.0.dtsi"
++#include "qcom-ipq8064-v1.0-smb208.dtsi"
+ 
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/soc/qcom,tcsr.h>
+--- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-#include "qcom-ipq8064.dtsi"
++#include "qcom-ipq8064-smb208.dtsi"
+ #include <dt-bindings/input/input.h>
+ 
+ / {
+--- a/arch/arm/boot/dts/qcom-ipq8064-wpq864.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-wpq864.dts
+@@ -5,7 +5,7 @@
+  *  All rights reserved.
+  */
+ 
+-#include "qcom-ipq8064-v1.0.dtsi"
++#include "qcom-ipq8064-v1.0-smb208.dtsi"
+ 
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/soc/qcom,tcsr.h>
+--- /dev/null
++++ b/arch/arm/boot/dts/qcom-ipq8064-v1.0-smb208.dtsi
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "qcom-ipq8064-v1.0.dtsi"
++
++&rpm {
++	smb208_regulators: regulators {
++		compatible = "qcom,rpm-smb208-regulators";
++
++		smb208_s1a: s1a {
++			regulator-min-microvolt = <1050000>;
++			regulator-max-microvolt = <1150000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++
++		smb208_s1b: s1b {
++			regulator-min-microvolt = <1050000>;
++			regulator-max-microvolt = <1150000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++
++	};
++};
