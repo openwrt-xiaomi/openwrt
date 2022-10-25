@@ -19,9 +19,9 @@
 +/* NSS safe parent index which will be used during NSS PLL rate change */
 +static int gcc_ipq806x_nss_safe_parent;
  
- static struct clk_pll pll0 = {
- 	.l_reg = 0x30c4,
-@@ -2995,6 +2999,139 @@ static struct clk_branch ce5_h_clk = {
+ static const struct clk_parent_data gcc_pxo[] = {
+ 	{ .fw_name = "pxo", .name = "pxo" },
+@@ -3061,6 +3065,139 @@ static struct clk_branch ce5_h_clk = {
  	},
  };
  
@@ -152,7 +152,7 @@
 +	.hw.init = &(struct clk_init_data){
 +		.name = "nss_core_clk",
 +		.ops = &clk_ops_nss_core,
-+		.parent_names = gcc_pxo_pll8_pll14_pll18_pll0,
++		.parent_data = gcc_pxo_pll8_pll14_pll18_pll0,
 +		.num_parents = 5,
 +		.flags = CLK_SET_RATE_PARENT,
 +	},
@@ -161,7 +161,7 @@
  static struct clk_regmap *gcc_ipq806x_clks[] = {
  	[PLL0] = &pll0.clkr,
  	[PLL0_VOTE] = &pll0_vote,
-@@ -3114,6 +3251,7 @@ static struct clk_regmap *gcc_ipq806x_cl
+@@ -3180,6 +3317,7 @@ static struct clk_regmap *gcc_ipq806x_cl
  	[UBI32_CORE2_CLK_SRC] = &ubi32_core2_src_clk.clkr,
  	[NSSTCM_CLK_SRC] = &nss_tcm_src.clkr,
  	[NSSTCM_CLK] = &nss_tcm_clk.clkr,
@@ -169,7 +169,7 @@
  	[PLL9] = &hfpll0.clkr,
  	[PLL10] = &hfpll1.clkr,
  	[PLL12] = &hfpll_l2.clkr,
-@@ -3334,6 +3472,12 @@ static int gcc_ipq806x_probe(struct plat
+@@ -3400,6 +3538,12 @@ static int gcc_ipq806x_probe(struct plat
  	if (!regmap)
  		return -ENODEV;
  
@@ -184,7 +184,7 @@
  	regmap_write(regmap, 0x31b0, 0x3080);
 --- a/drivers/clk/qcom/clk-rcg.c
 +++ b/drivers/clk/qcom/clk-rcg.c
-@@ -805,6 +805,11 @@ static int clk_dyn_rcg_set_rate_and_pare
+@@ -818,6 +818,11 @@ static int clk_dyn_rcg_set_rate_and_pare
  	return __clk_dyn_rcg_set_rate(hw, rate);
  }
  
@@ -198,7 +198,7 @@
  	.disable = clk_disable_regmap,
 --- a/drivers/clk/qcom/clk-rcg.h
 +++ b/drivers/clk/qcom/clk-rcg.h
-@@ -183,4 +183,7 @@ struct clk_rcg_dfs_data {
+@@ -184,4 +184,7 @@ struct clk_rcg_dfs_data {
  extern int qcom_cc_register_rcg_dfs(struct regmap *regmap,
  				    const struct clk_rcg_dfs_data *rcgs,
  				    size_t len);
