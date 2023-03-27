@@ -1,0 +1,92 @@
+--- a/arch/arm/boot/dts/qcom-ipq8064-onhub.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq8064-onhub.dtsi
+@@ -10,8 +10,6 @@
+ 
+ / {
+ 	aliases {
+-		ethernet0 = &gmac0;
+-		ethernet1 = &gmac2;
+ 		mdio-gpio0 = &mdio;
+ 		serial0 = &gsbi4_serial;
+ 	};
+@@ -109,6 +107,10 @@
+ 	};
+ };
+ 
++&adm_dma {
++    status = "okay";
++};
++
+ &qcom_pinmux {
+ 	rgmii0_pins: rgmii0_pins {
+ 		mux {
+@@ -290,9 +292,22 @@
+ 
+ &gmac0 {
+ 	status = "okay";
+-	phy-mode = "rgmii";
+-	qcom,id = <0>;
+-	phy-handle = <&phy1>;
++    compatible = "qcom,nss-gmac";
++
++    phy-mode = "rgmii";
++    qcom,id = <0>;
++    qcom,pcs-chanid = <0>;
++    qcom,phy-mdio-addr = <1>;
++    qcom,poll-required = <0>;
++    qcom,rgmii-delay = <1>;
++    qcom,phy_mii_type = <0>;
++    qcom,emulation = <0>;
++    qcom,forced-speed = <1000>;
++    qcom,forced-duplex = <1>;
++    qcom,socver = <0>;
++    qcom,irq = <252>;
++    local-mac-address = [00 00 00 00 00 00];
++    mdiobus = <&mdio>;
+ 
+ 	pinctrl-0 = <&rgmii0_pins>;
+ 	pinctrl-names = "default";
+@@ -305,9 +320,22 @@
+ 
+ &gmac2 {
+ 	status = "okay";
+-	phy-mode = "sgmii";
+-	qcom,id = <2>;
+-	phy-handle = <&phy0>;
++    compatible = "qcom,nss-gmac";
++    
++    phy-mode = "sgmii";
++    qcom,id = <2>;
++    qcom,pcs-chanid = <1>;
++    qcom,phy-mdio-addr = <0>;
++    qcom,poll-required = <0>;
++    qcom,rgmii-delay = <0>;
++    qcom,phy_mii_type = <1>;
++    qcom,emulation = <0>;
++    qcom,forced-speed = <1000>;
++    qcom,forced-duplex = <1>;
++    qcom,socver = <0>;
++    qcom,irq = <258>;
++    local-mac-address = [00 00 00 00 00 00];
++    mdiobus = <&mdio>;
+ 
+ 	fixed-link {
+ 		speed = <1000>;
+@@ -407,8 +435,6 @@
+ 		ath10k@0,0 {
+ 			reg = <0 0 0 0 0>;
+ 			device_type = "pci";
+-			qcom,ath10k-sa-gpio = <2 3 4 0>;
+-			qcom,ath10k-sa-gpio-func = <5 5 5 0>;
+ 		};
+ 	};
+ };
+@@ -426,8 +452,6 @@
+ 		ath10k@0,0 {
+ 			reg = <0 0 0 0 0>;
+ 			device_type = "pci";
+-			qcom,ath10k-sa-gpio = <2 3 4 0>;
+-			qcom,ath10k-sa-gpio-func = <5 5 5 0>;
+ 		};
+ 	};
+ };
