@@ -38,7 +38,7 @@
  	if (IS_ERR(qs->soc_dev))
  		return PTR_ERR(qs->soc_dev);
  
-+	pr_info("CPU: %s, SoC Version: %s\ id: %d fmt: %x\n", qs->attr.machine,
++	pr_info("CPU: %s, SoC Version: %s id: %d fmt: %x\n", qs->attr.machine,
 +                                   qs->attr.revision, info->id, qs->info.fmt);
 +
  	socinfo_debugfs_init(qs, info, item_size);
