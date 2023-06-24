@@ -179,7 +179,7 @@
  	default:
  		break;
  	}
-@@ -172,13 +200,20 @@ int br_handle_frame_finish(struct net *n
+@@ -172,12 +200,19 @@ int br_handle_frame_finish(struct net *n
  			dst->used = now;
  		br_forward(dst->dst, skb, local_rcv, false);
  	} else {
@@ -190,7 +190,6 @@
 +		}
 +		/* QCA qca-mcs support - End */
 +
- 		br_offload_skb_disable(skb);
  		if (!mcast_hit)
  			br_flood(br, skb, pkt_type, local_rcv, false);
  		else
