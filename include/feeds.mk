@@ -30,7 +30,11 @@ endef
 # 1: destination file
 define FeedSourcesAppend
 ( \
+  $(if $(wildcard $(TOPDIR)/feed_core_url), \
+    echo `cat $(TOPDIR)/feed_core_url` ;\
+  , \
   echo 'src/gz %d_core %U/targets/%S/packages'; \
+  ) \
   $(strip $(if $(CONFIG_PER_FEED_REPO), \
 	echo 'src/gz %d_base %U/packages/%A/base'; \
 	$(if $(filter %SNAPSHOT-y,$(VERSION_NUMBER)-$(CONFIG_BUILDBOT)), \
