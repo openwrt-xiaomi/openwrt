@@ -10,10 +10,9 @@ PKG_NAME:=firmware-utils
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware-utils.git
-PKG_SOURCE_DATE:=2023-06-29
-PKG_SOURCE_VERSION:=9e2de8515be15e2b61ae518ce592e5b446ef2d48
-PKG_MIRROR_HASH:=e43d1796dd482ec364e5196f224bb1563dbb0494f0f28fb4e206ef7ef31260fb
+PKG_SOURCE_URL=https://github.com/openwrt-xiaomi/firmware-utils.git
+PKG_SOURCE_DATE:=2023-11-07
+PKG_SOURCE_VERSION:=6860bfb8b47651a6e41fa1422ee70a571f764575
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/cmake.mk
