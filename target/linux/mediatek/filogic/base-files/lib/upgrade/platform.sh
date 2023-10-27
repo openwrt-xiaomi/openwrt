@@ -47,6 +47,17 @@ xiaomi_initial_setup()
 	esac
 }
 
+asus_initial_setup()
+{
+	# initialize UBI if it's running on initramfs
+	[ "$(rootfs_type)" = "tmpfs" ] || return 0
+
+	ubirmvol /dev/ubi0 -N rootfs
+	ubirmvol /dev/ubi0 -N rootfs_data
+	ubirmvol /dev/ubi0 -N jffs2
+	ubimkvol /dev/ubi0 -N jffs2 -s 0x3e000
+}
+
 platform_do_upgrade() {
 	local board=$(board_name)
 
@@ -152,6 +163,11 @@ platform_pre_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+	asus,rt-ax59u|\
+	asus,tuf-ax4200|\
+	asus,tuf-ax6000)
+		asus_initial_setup
+		;;
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,redmi-router-ax6000-stock)
 		xiaomi_initial_setup
