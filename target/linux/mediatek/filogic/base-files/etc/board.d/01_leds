@@ -6,6 +6,9 @@ board=$(board_name)
 board_config_update
 
 case $board in
+asus,rt-ax52)
+	ucidef_set_led_netdev "eth1" "wan" "blue:wan" "eth1"
+	;;
 cudy,wr3000-v1)
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan"
 	;;
