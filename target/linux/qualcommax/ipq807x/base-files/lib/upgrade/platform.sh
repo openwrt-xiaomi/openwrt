@@ -4,6 +4,17 @@ REQUIRE_IMAGE_METADATA=1
 RAMFS_COPY_BIN='fw_printenv fw_setenv head'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
+asus_initial_setup()
+{
+	# initialize UBI if it's running on initramfs
+	[ "$(rootfs_type)" = "tmpfs" ] || return 0
+
+	ubirmvol /dev/ubi0 -N rootfs
+	ubirmvol /dev/ubi0 -N rootfs_data
+	ubirmvol /dev/ubi0 -N jffs2
+	ubimkvol /dev/ubi0 -N jffs2 -s 0x3e000
+}
+
 xiaomi_initramfs_prepare() {
 	# Wipe UBI if running initramfs
 	[ "$(rootfs_type)" = "tmpfs" ] || return 0
@@ -33,6 +44,9 @@ platform_check_image() {
 
 platform_pre_upgrade() {
 	case "$(board_name)" in
+	asus,rt-ax89x)
+		asus_initial_setup
+		;;
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
