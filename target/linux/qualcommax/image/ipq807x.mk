@@ -23,14 +23,23 @@ endef
 TARGET_DEVICES += arcadyan_aw1000
 
 define Device/asus_rt-ax89x
-       $(call Device/FitImage)
-       $(call Device/UbiFit)
-       DEVICE_VENDOR := Asus
+	$(call Device/LegacyImage)
+	DEVICE_VENDOR := Asus
 	DEVICE_MODEL := RT-AX89X
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@hk01
 	SOC := ipq8074
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+	ARTIFACTS := initramfs.trx
+	ARTIFACT/initramfs.trx := \
+		append-vmlinux-initramfs | gzip | check-size 16380k | save-to img_kernel | \
+		append-fake-rootfs xz /lib/firmware/IPQ8074A/fw_version.txt "fake" -noI -noD -noF -noX | save-to img_rd | \
+		append-dtb | save-to img_dtb | \
+		uImageAdv multi gzip img_kernel:img_rd:img_dtb | \
+		asus-trx -v 2 -n RT-AX89U -b 388 -e 49000 | \
+		remove-file img_kernel | remove-file img_rd | remove-file img_dtb
+endif
 	DEVICE_PACKAGES := kmod-hwmon-gpiofan ipq-wifi-asus_rt-ax89x
 endef
 TARGET_DEVICES += asus_rt-ax89x
