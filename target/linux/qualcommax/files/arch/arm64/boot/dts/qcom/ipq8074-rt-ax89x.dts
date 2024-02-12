@@ -31,7 +31,8 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		bootargs-append = " ubi.mtd=UBI_DEV";
+		bootargs = " ";
+		bootargs-override = "ubi.mtd=UBI_DEV";
 	};
 
 	keys {
