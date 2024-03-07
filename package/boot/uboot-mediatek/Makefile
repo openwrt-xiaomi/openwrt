@@ -48,6 +48,42 @@ define U-Boot/mt7620_rfb
   UBOOT_IMAGE:=u-boot-with-spl.bin
 endef
 
+define U-Boot/mt7986_rt-ax59u-ubi-cleaner
+  NAME:=ASUS RT AX59U (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986_rt-ax59u-ubi-cleaner
+  BUILD_DEVICES:=asus_rt-ax59u
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
+define U-Boot/mt7986_tuf-ax4200-ubi-cleaner
+  NAME:=ASUS TUF AX4200 (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986_tuf-ax4200-ubi-cleaner
+  BUILD_DEVICES:=asus_tuf-ax4200
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
+define U-Boot/mt7986_tuf-ax6000-ubi-cleaner
+  NAME:=ASUS TUF AX6000 (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986_tuf-ax6000-ubi-cleaner
+  BUILD_DEVICES:=asus_tuf-ax6000
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
+define U-Boot/mt7988_zenwifi-bt8-ubi-cleaner
+  NAME:=ASUS ZenWiFi BT8 (as UBI cleaner)
+  UBOOT_CONFIG:=mt7988_zenwifi-bt8-ubi-cleaner
+  BUILD_DEVICES:=asus_zenwifi-bt8
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+  BL2_BOOTDEV:=spim-nand-ubi
+  BL2_SOC:=mt7988
+  BL2_DDRTYPE:=ddr4
+  DEPENDS:=+trusted-firmware-a-mt7988-spim-nand-ubi-ddr4
+endef
+
 define U-Boot/mt7620_mt7530_rfb
   NAME:=MT7620+MT7530 Reference Board
   UBOOT_CONFIG:=mt7620_mt7530_rfb
@@ -916,6 +952,12 @@ UBOOT_CUSTOMIZE_CONFIG := \
 ifdef CONFIG_TARGET_mediatek
 UBOOT_MAKE_FLAGS += $(UBOOT_IMAGE:.fip=.bin)
 endif
+
+UBOOT_TARGETS += \
+	mt7986_rt-ax59u-ubi-cleaner \
+	mt7986_tuf-ax4200-ubi-cleaner \
+	mt7986_tuf-ax6000-ubi-cleaner \
+	mt7988_zenwifi-bt8-ubi-cleaner \
 
 define Build/fip-image
 	$(if $(FIP_COMPRESS),\
