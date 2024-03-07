@@ -1,0 +1,26 @@
+From 57dc777bddf0baf3c27177576c40b5113309ce54 Mon Sep 17 00:00:00 2001
+From: remittor <remittor@gmail.com>
+Date: Sat, 4 Mar 2024 20:30:16 +0800
+Subject: [PATCH] add asus ubi cleaner
+
+---
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index a3be00a8..97402e04 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -5,6 +5,12 @@
+ dtb-$(CONFIG_TARGET_CORVUS) += at91sam9g45-corvus.dtb
+ dtb-$(CONFIG_TARGET_GURNARD) += at91sam9g45-gurnard.dtb
+ 
++dtb-$(CONFIG_ARCH_MEDIATEK) += \
++	mt7986-rt-ax59u-ubi-cleaner.dtb \
++	mt7986-tuf-ax4200-ubi-cleaner.dtb \
++	mt7986-tuf-ax6000-ubi-cleaner.dtb \
++	mt7988-zenwifi-bt8-ubi-cleaner.dtb \
++
+ dtb-$(CONFIG_TARGET_SMDKC100) += s5pc1xx-smdkc100.dtb
+ dtb-$(CONFIG_TARGET_S5P_GONI) += s5pc1xx-goni.dtb
+ dtb-$(CONFIG_ARCH_EXYNOS4) += exynos4210-origen.dtb \
+-- 
+2.44.0
+
