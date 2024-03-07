@@ -231,7 +231,6 @@ define Device/asus_tuf-ax4200
   DEVICE_MODEL := TUF-AX4200
   DEVICE_DTS := mt7986a-asus-tuf-ax4200
   DEVICE_DTS_DIR := ../dts
-  DEVICE_DTS_LOADADDR := 0x47000000
   DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
   IMAGES := sysupgrade.bin
   KERNEL := kernel-bin | lzma | \
@@ -247,7 +246,6 @@ define Device/asus_tuf-ax6000
   DEVICE_MODEL := TUF-AX6000
   DEVICE_DTS := mt7986a-asus-tuf-ax6000
   DEVICE_DTS_DIR := ../dts
-  DEVICE_DTS_LOADADDR := 0x47000000
   DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
   IMAGES := sysupgrade.bin
   KERNEL := kernel-bin | lzma | \
