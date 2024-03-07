@@ -48,6 +48,30 @@ define U-Boot/mt7620_rfb
   UBOOT_IMAGE:=u-boot-with-spl.bin
 endef
 
+define U-Boot/mt7986_asus_rt-ax59u-ubi-cleaner
+  NAME:=ASUS RT AX59U (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986a_asus_rt-ax59u-ubi-cleaner
+  BUILD_DEVICES:=asus_rt-ax59u
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
+define U-Boot/mt7986_asus_tuf-ax4200-ubi-cleaner
+  NAME:=ASUS TUF AX4200 (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986a_asus_tuf-ax4200-ubi-cleaner
+  BUILD_DEVICES:=asus_tuf-ax4200
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
+define U-Boot/mt7986_asus_tuf-ax6000-ubi-cleaner
+  NAME:=ASUS TUF AX6000 (as UBI cleaner)
+  UBOOT_CONFIG:=mt7986a_asus_tuf-ax6000-ubi-cleaner
+  BUILD_DEVICES:=asus_tuf-ax6000
+  BUILD_SUBTARGET:=filogic
+  UBOOT_IMAGE:=u-boot.bin
+endef
+
 define U-Boot/mt7620_mt7530_rfb
   NAME:=MT7620+MT7530 Reference Board
   UBOOT_CONFIG:=mt7620_mt7530_rfb
@@ -809,6 +833,11 @@ UBOOT_CUSTOMIZE_CONFIG := \
 ifdef CONFIG_TARGET_mediatek
 UBOOT_MAKE_FLAGS += $(UBOOT_IMAGE:.fip=.bin)
 endif
+
+UBOOT_TARGETS += \
+	mt7986_asus_rt-ax59u-ubi-cleaner \
+	mt7986_asus_tuf-ax4200-ubi-cleaner \
+	mt7986_asus_tuf-ax6000-ubi-cleaner
 
 define Build/fip-image
 	$(if $(FIP_COMPRESS),\
