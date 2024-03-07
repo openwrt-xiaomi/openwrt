@@ -1,0 +1,310 @@
+From 57dc777bddf0baf3c27177576c40b5113309ce54 Mon Sep 17 00:00:00 2001
+From: remittor <remittor@gmail.com>
+Date: Sat, 4 Mar 2024 20:30:16 +0800
+Subject: [PATCH] add UBI-Cleaner for Asus ZenWiFi-BT8
+
+---
+diff --git a/arch/arm/dts/mt7988-zenwifi-bt8-ubi-cleaner.dts b/arch/arm/dts/mt7988-zenwifi-bt8-ubi-cleaner.dts
+new file mode 100644
+index 00000000..abc2b467
+--- /dev/null
++++ b/arch/arm/dts/mt7988-zenwifi-bt8-ubi-cleaner.dts
+@@ -0,0 +1,140 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Sam Shih <sam.shih@mediatek.com>
++ */
++
++/dts-v1/;
++#include "mt7988.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/linux-event-codes.h>
++
++/ {
++	model = "Asus ZenWiFi BT8";
++	compatible = "asus,zenwifi-bt8", "mediatek,mt7988";
++
++	chosen {
++		stdout-path = &uart0;
++	};
++
++	memory@40000000 {
++		device_type = "memory";
++		reg = <0 0x40000000 0 0x10000000>;
++	};
++
++	reg_3p3v: regulator-3p3v {
++		compatible = "regulator-fixed";
++		regulator-name = "fixed-3.3V";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	reg_1p8v: regulator-1p8v {
++		compatible = "regulator-fixed";
++		regulator-name = "fixed-1.8V";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			linux,code = <KEY_RESTART>;
++			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
++		};
++
++		wps {
++			label = "wps";
++			linux,code = <KEY_WPS_BUTTON>;
++			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_status_red: led-red {
++			label = "red:status";
++			gpios = <&gpio 57 GPIO_ACTIVE_HIGH>;
++		};
++
++		led_status_green: led-green {
++			label = "green:status";
++			gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
++		};
++
++		led_status_blue: led-blue {
++			label = "blue:status";
++			gpios = <&gpio 59 GPIO_ACTIVE_HIGH>;
++		};
++	};
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&eth {
++	status = "okay";
++	mediatek,gmac-id = <0>;
++	phy-mode = "usxgmii";
++	mediatek,switch = "mt7988";
++
++	fixed-link {
++		speed = <1000>;
++		full-duplex;
++		pause;
++	};
++};
++
++&pinctrl {
++	spi0_pins: spi0-pins {
++		mux {
++			function = "spi";
++			groups = "spi0", "spi0_wp_hold";
++		};
++	};
++};
++
++&spi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi0_pins>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++	must_tx;
++	enhance_timing;
++	dma_ext;
++	ipm_design;
++	support_quad;
++	tick_dly = <2>;
++	sample_sel = <0>;
++
++	spi_nand@0 {
++		compatible = "spi-nand";
++		reg = <0>;
++		spi-max-frequency = <52000000>;
++		partitions: partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "Bootloader";
++				reg = <0x0 0x400000>;
++			};
++
++			partition@400000 {
++				label = "UBI_DEV";
++				reg = <0x400000 0x7c00000>;
++			};
++		};
++	};
++};
++
+diff --git a/configs/mt7988_zenwifi-bt8-ubi-cleaner_defconfig b/configs/mt7988_zenwifi-bt8-ubi-cleaner_defconfig
+new file mode 100644
+index 00000000..dfb3a1bb
+--- /dev/null
++++ b/configs/mt7988_zenwifi-bt8-ubi-cleaner_defconfig
+@@ -0,0 +1,126 @@
++CONFIG_ARM=y
++CONFIG_SYS_HAS_NONCACHED_MEMORY=y
++CONFIG_POSITION_INDEPENDENT=y
++CONFIG_ARCH_MEDIATEK=y
++CONFIG_TEXT_BASE=0x41e00000
++CONFIG_SYS_MALLOC_F_LEN=0x4000
++CONFIG_NR_DRAM_BANKS=1
++CONFIG_DEFAULT_DEVICE_TREE="mt7988-zenwifi-bt8-ubi-cleaner"
++CONFIG_OF_LIBFDT_OVERLAY=y
++CONFIG_TARGET_MT7988=y
++CONFIG_PRE_CON_BUF_ADDR=0x4007EF00
++CONFIG_DEBUG_UART_BASE=0x11000000
++CONFIG_DEBUG_UART_CLOCK=40000000
++CONFIG_SYS_LOAD_ADDR=0x50000000
++CONFIG_PCI=y
++CONFIG_DEBUG_UART=y
++CONFIG_AHCI=y
++CONFIG_FIT=y
++CONFIG_BOOTDELAY=1
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_MENU_SHOW=n
++CONFIG_OF_SYSTEM_SETUP=y
++CONFIG_DEFAULT_FDT_FILE="mediatek/mt7988-zenwifi-bt8-ubi-cleaner"
++CONFIG_SYS_CBSIZE=512
++CONFIG_SYS_PBSIZE=1049
++CONFIG_LOGLEVEL=7
++CONFIG_PRE_CONSOLE_BUFFER=y
++CONFIG_LOG=y
++CONFIG_BOARD_LATE_INIT=y
++CONFIG_HUSH_PARSER=y
++CONFIG_SYS_PROMPT="MT7988> "
++CONFIG_CMD_CPU=y
++CONFIG_CMD_LICENSE=y
++# CONFIG_CMD_BOOTEFI_BOOTMGR is not set
++CONFIG_CMD_BOOTMENU=y
++CONFIG_CMD_ASKENV=y
++CONFIG_CMD_ERASEENV=y
++CONFIG_CMD_ENV_FLAGS=y
++CONFIG_CMD_STRINGS=y
++CONFIG_CMD_DM=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_PWM=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_MTD=y
++CONFIG_CMD_PART=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_SF_TEST=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_TFTPSRV=y
++CONFIG_CMD_RARP=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CDP=y
++CONFIG_CMD_SNTP=y
++CONFIG_CMD_DNS=y
++CONFIG_CMD_LINK_LOCAL=y
++CONFIG_CMD_PXE=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_UUID=y
++CONFIG_CMD_HASH=y
++CONFIG_CMD_SMC=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_CMD_FS_UUID=y
++CONFIG_CMD_NAND=y
++CONFIG_CMD_MTDPARTS=y
++CONFIG_MTDPARTS_DEFAULT="mtdparts=spi-nand0:4096k(Bootloader),-(UBI_DEV)"
++CONFIG_CMD_UBI=y
++CONFIG_CMD_UBI_RENAME=y
++CONFIG_SYS_REDUNDAND_ENVIRONMENT=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_USE_DEFAULT_ENV_FILE=y
++CONFIG_DEFAULT_ENV_FILE="zenwifi-bt8-ubi-cleaner_env"
++CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
++CONFIG_VERSION_VARIABLE=y
++CONFIG_NETCONSOLE=y
++CONFIG_USE_IPADDR=y
++CONFIG_IPADDR="192.168.1.1"
++CONFIG_USE_SERVERIP=y
++CONFIG_SERVERIP="192.168.1.254"
++CONFIG_REGMAP=y
++CONFIG_SYSCON=y
++CONFIG_BUTTON=y
++CONFIG_BUTTON_GPIO=y
++CONFIG_CLK=y
++CONFIG_GPIO_HOG=y
++CONFIG_LED=y
++CONFIG_LED_BLINK=y
++CONFIG_LED_GPIO=y
++CONFIG_MTD=y
++CONFIG_DM_MTD=y
++CONFIG_MTD_SPI_NAND=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_SPI_FLASH_WINBOND=y
++# CONFIG_SPI_FLASH_USE_4K_SECTORS is not set
++CONFIG_SPI_FLASH_MTD=y
++CONFIG_MTD_UBI_FASTMAP=y
++CONFIG_PHY_FIXED=y
++CONFIG_MEDIATEK_ETH=y
++CONFIG_PCIE_MEDIATEK=y
++CONFIG_PHY=y
++CONFIG_PHY_MTK_TPHY=y
++CONFIG_PINCTRL=y
++CONFIG_PINCONF=y
++CONFIG_PINCTRL_MT7988=y
++CONFIG_POWER_DOMAIN=y
++CONFIG_MTK_POWER_DOMAIN=y
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++CONFIG_DM_PWM=y
++CONFIG_PWM_MTK=y
++CONFIG_RAM=y
++CONFIG_SCSI=y
++CONFIG_DM_SERIAL=y
++CONFIG_MTK_SERIAL=y
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_MTK_SPIM=y
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_MTK=y
++CONFIG_USB_STORAGE=y
++CONFIG_ZSTD=y
++CONFIG_HEXDUMP=y
++CONFIG_LMB_MAX_REGIONS=64
++
+diff --git a/zenwifi-bt8-ubi-cleaner_env b/zenwifi-bt8-ubi-cleaner_env
+new file mode 100644
+index 00000000..a50c496c
+--- /dev/null
++++ b/zenwifi-bt8-ubi-cleaner_env
+@@ -0,0 +1,19 @@
++ipaddr=192.168.1.1
++serverip=192.168.1.254
++loadaddr=0x50000000
++console=earlycon=uart8250,mmio32,0x11000000 console=ttyS0,115200n8
++bootled_pwr=white:system
++bootled_rec=red:wan
++bootcmd=run ubi_CLEAN
++bootconf=config-1
++bootdelay=0
++bootmenu_delay=0
++bootmenu_0=Cleanup ubi volumes.=run ubi_CLEAN
++bootfile=asus_recovery.itb
++ubi_CLEAN=echo "run ubi_CLEAN" ; led $bootled_pwr off ; led $bootled_rec on ; ubi part UBI_DEV && run ubi_clean
++ubi_clean=echo "run ubi_clean" ; run rmvol1 ; run rmvol2 ; run rmvol3 ; run rmvol4 ; run rmvol5 ; ubi detach
++rmvol1=ubi remove linux
++rmvol2=ubi remove linux2
++rmvol3=ubi remove rootfs
++rmvol4=ubi remove rootfs_data
++rmvol5=ubi remove jffs2
+-- 
