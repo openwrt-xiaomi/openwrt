@@ -33,6 +33,30 @@ define Device/Default
 	pad-rootfs | append-metadata
 endef
 
+define Build/asus-trx
+	$(STAGING_DIR_HOST)/bin/asusuimage $(wordlist 1,$(words $(1)),$(1)) -i $@ -o $@.new
+	mv $@.new $@
+endef
+
+define Build/x-uboot-bin
+	cat $(STAGING_DIR_IMAGE)/$(1)-u-boot.bin >> $@
+endef
+
+define Build/x-uboot-fit
+	$(eval cmptype=$(word 1,$(1)))
+	$(eval epaddr=$(word 2,$(1)))
+	$(eval dtbimg=$(word 3,$(1)))
+	$(TOPDIR)/scripts/mkits.sh \
+		-D $(DEVICE_NAME) -o $@.its -k $@ \
+		-C $(cmptype) \
+		-a $(epaddr) -e $(epaddr) \
+		-c "config-1" \
+		$(if $(dtbimg),-d $(dtbimg), ) \
+		-A $(LINUX_KARCH) -v u-boot
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
+	@mv $@.new $@
+endef
+
 include $(SUBTARGET).mk
 
 define Image/Build
