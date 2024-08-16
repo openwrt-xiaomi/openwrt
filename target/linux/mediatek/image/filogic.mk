@@ -222,7 +222,21 @@ define Device/asus_rt-ax59u
   DEVICE_DTS := mt7986a-asus-rt-ax59u
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  KERNEL := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k  
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-bin mt7986_asus_rt-ax59u-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -n $$(DEVICE_MODEL)
+endif
 endef
 TARGET_DEVICES += asus_rt-ax59u
 
@@ -238,6 +252,16 @@ define Device/asus_tuf-ax4200
   KERNEL_INITRAMFS := kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-bin mt7986_asus_tuf-ax4200-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
 endef
 TARGET_DEVICES += asus_tuf-ax4200
 
@@ -253,6 +277,17 @@ define Device/asus_tuf-ax6000
   KERNEL_INITRAMFS := kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-bin mt7986_asus_tuf-ax6000-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+
 endef
 TARGET_DEVICES += asus_tuf-ax6000
 
