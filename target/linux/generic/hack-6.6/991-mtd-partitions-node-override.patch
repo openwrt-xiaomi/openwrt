@@ -1,0 +1,94 @@
+--- a/drivers/mtd/mtdpart.c
++++ b/drivers/mtd/mtdpart.c
+@@ -720,6 +720,10 @@
+ 	const char *fixed = "fixed-partitions";
+ 	int ret, err = 0;
+ 
++	struct device_node *mtd_root_node = NULL;
++	const char *real_parts_prop = "_partitions_node";
++	const char *real_parts = NULL;
++
+ 	dev = &master->dev;
+ 	/* Use parent device (controller) if the top level MTD is not registered */
+ 	if (!IS_ENABLED(CONFIG_MTD_PARTITIONED_MASTER) && !mtd_is_partition(master))
+@@ -731,6 +735,26 @@
+ 	else
+ 		np = of_get_child_by_name(np, "partitions");
+ 
++	if (master->parent == NULL) { /* root mtd node */
++		mtd_root_node = mtd_get_of_node(master);
++		if (of_property_present(mtd_root_node, real_parts_prop)) {			
++			pr_notice("%s: property '%s' founded in %pOFf \n", __func__, real_parts_prop, mtd_root_node);
++			ret = of_property_read_string(mtd_root_node, real_parts_prop, &real_parts);
++			if (ret != 0) {
++				pr_err("%s: cannot read property '%s' \n", __func__, real_parts_prop);
++				real_parts = NULL;
++			} else {
++				pr_notice("%s: property '%s' = '%s' \n", __func__, real_parts_prop, real_parts);
++				np = of_get_child_by_name(mtd_root_node, real_parts);
++				pr_notice("%s: real partitions node = %pOFf \n", __func__, np);
++				if (!np) {
++					pr_err("%s: node '%s' not found! \n", __func__, real_parts);
++					return -ECHILD;
++				}
++			}
++		}
++	}
++
+ 	/*
+ 	 * Don't create devices that are added to a bus but will never get
+ 	 * probed. That'll cause fw_devlink to block probing of consumers of
+@@ -757,6 +781,11 @@
+ 	of_platform_populate(np, NULL, NULL, dev);
+ 	of_node_put(np);
+ 
++	if (real_parts && master->parent == NULL) {
++		pr_notice("%s: skip backward compatibility code (err = %d) \n", __func__, err);
++		return err;
++	}
++
+ 	/*
+ 	 * For backward compatibility we have to try the "fixed-partitions"
+ 	 * parser. It supports old DT format with partitions specified as a
+--- a/drivers/mtd/parsers/ofpart_core.c
++++ b/drivers/mtd/parsers/ofpart_core.c
+@@ -52,6 +52,10 @@
+ 	int nr_parts, i, ret = 0;
+ 	bool dedicated = true;
+ 
++	struct device_node *mtd_root_node = NULL;
++	const char *real_parts_prop = "_partitions_node";
++	const char *real_parts = NULL;
++
+ 	/* Pull of_node from the master device node */
+ 	mtd_node = mtd_get_of_node(master);
+ 	if (!mtd_node)
+@@ -74,6 +78,28 @@
+ 		ofpart_node = mtd_node;
+ 	}
+ 
++
++	if (master->parent == NULL) { /* root mtd node */
++		mtd_root_node = mtd_get_of_node(master);
++		if (of_property_present(mtd_root_node, real_parts_prop)) {			
++			pr_notice("%s: property '%s' founded in %pOFf \n", __func__, real_parts_prop, mtd_root_node);
++			ret = of_property_read_string(mtd_root_node, real_parts_prop, &real_parts);
++			if (ret != 0) {
++				pr_err("%s: cannot read property '%s' \n", __func__, real_parts_prop);
++				real_parts = NULL;
++			} else {
++				pr_notice("%s: property '%s' = '%s' \n", __func__, real_parts_prop, real_parts);
++				ofpart_node = of_get_child_by_name(mtd_root_node, real_parts);
++				pr_notice("%s: real partitions node = %pOFf \n", __func__, ofpart_node);
++				if (!ofpart_node) {
++					pr_err("%s: node '%s' not found! Skip process mtd node!\n", __func__, real_parts);
++					return 0;
++				}
++				dedicated = true;
++			}
++		}
++	}
++
+ 	of_id = of_match_node(parse_ofpart_match_table, ofpart_node);
+ 	if (dedicated && !of_id) {
+ 		/* The 'partitions' subnode might be used by another parser */ 
