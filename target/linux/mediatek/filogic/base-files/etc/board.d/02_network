@@ -17,6 +17,9 @@ mediatek_setup_interfaces()
 	asus,rt-ax52)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
+	asus,rt-ax57m)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
+		;;
 	asus,rt-ax59u|\
 	cetron,ct3003|\
 	confiabits,mt7981|\
@@ -114,6 +117,7 @@ mediatek_setup_macs()
 
 	case $board in
 	asus,rt-ax52|\
+	asus,rt-ax57m|\
 	asus,rt-ax59u|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
