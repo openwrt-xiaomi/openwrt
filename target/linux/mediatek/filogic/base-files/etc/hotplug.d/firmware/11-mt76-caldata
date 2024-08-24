@@ -28,6 +28,10 @@ case "$FIRMWARE" in
 		CI_UBIPART="UBI_DEV"
 		caldata_extract_ubi "Factory" 0x0 0x1000
 		;;
+	asus,rt-ax57m)
+		CI_UBIPART="UBI_DEV"
+		caldata_extract_ubi "Factory" 0x0 0x1000
+		;;
 	cmcc,rax3000m)
 		case "$(cmdline_get_var root)" in
 		/dev/mmc*)
