@@ -62,7 +62,7 @@ define Device/asus_rt-ax89x
 		append-kernel | asus-fake-ramdisk |\
 		multiImage gzip $$(KDIR)/tmp/fakerd $$(KDIR)/image-$$(DEVICE_DTS).dtb |\
 		sysupgrade-tar kernel=$$$$@ | append-metadata
-ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+ifneq ($(CONFIG_TARGET_INITRAMFS_FORCE),)
 	ARTIFACTS := initramfs-factory.trx initramfs-uImage.itb
 	ARTIFACT/initramfs-uImage.itb := \
 		append-image-stage initramfs-kernel.bin | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
