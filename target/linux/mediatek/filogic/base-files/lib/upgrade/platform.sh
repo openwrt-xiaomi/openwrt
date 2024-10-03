@@ -42,10 +42,10 @@ xiaomi_initial_setup()
 	fw_setenv boot_wait on
 	fw_setenv uart_en 1
 	fw_setenv flag_boot_rootfs 0
-	fw_setenv flag_last_success 1
+	fw_setenv flag_last_success 0
 	fw_setenv flag_boot_success 1
-	fw_setenv flag_try_sys1_failed 8
-	fw_setenv flag_try_sys2_failed 8
+	fw_setenv flag_try_sys1_failed 0
+	fw_setenv flag_try_sys2_failed 0
 
 	local board=$(board_name)
 	case "$board" in
