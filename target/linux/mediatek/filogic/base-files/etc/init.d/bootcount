@@ -16,4 +16,32 @@ boot() {
 		fw_setenv uboot_bootcount 0
 		;;
 	esac
+	
+	# check running not initramfs mode
+	[ "$(rootfs_type)" = "tmpfs" ] && return 0
+	
+	case $(board_name) in
+	xiaomi,mi-router-ax3000t|\
+	xiaomi,mi-router-wr30u-stock|\
+	xiaomi,redmi-router-ax6000-stock)
+		local boot_wait=$( fw_printenv boot_wait | cut -d = -f 2 )
+		[ "$boot_wait" != "on" ] && fw_setenv boot_wait on
+		local bootdelay=$( fw_printenv bootdelay | cut -d = -f 2 )
+		[ "$bootdelay" != "3" ] && fw_setenv bootdelay 3
+		local bootmenu_delay=$( fw_printenv bootmenu_delay | cut -d = -f 2 )
+		[ "$bootmenu_delay" != "5" ] && fw_setenv bootmenu_delay 5
+		local uart_en=$( fw_printenv uart_en | cut -d = -f 2 )
+		[ "$uart_en" != "1" ] && fw_setenv uart_en 1
+		local flag_boot_rootfs=$( fw_printenv flag_boot_rootfs | cut -d = -f 2 )
+		[ "$flag_boot_rootfs" != "0" ] && fw_setenv flag_boot_rootfs 0
+		local flag_last_success=$( fw_printenv flag_last_success | cut -d = -f 2 )
+		[ "$flag_last_success" != "0" ] && fw_setenv flag_last_success 0
+		local flag_boot_success=$( fw_printenv flag_boot_success | cut -d = -f 2 )
+		[ "$flag_boot_success" != "1" ] && fw_setenv flag_boot_success 1
+		local flag_try_sys1_failed=$( fw_printenv flag_try_sys1_failed | cut -d = -f 2 )
+		[ "$flag_try_sys1_failed" != "0" ] && fw_setenv flag_try_sys1_failed 0
+		local flag_try_sys2_failed=$( fw_printenv flag_try_sys2_failed | cut -d = -f 2 )
+		[ "$flag_try_sys2_failed" != "0" ] && fw_setenv flag_try_sys2_failed 0
+		;;
+	esac
 }
