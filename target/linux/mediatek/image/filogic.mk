@@ -268,6 +268,31 @@ define Device/asus_rt-ax59u
 endef
 TARGET_DEVICES += asus_rt-ax59u
 
+define Device/asus_rt-ax52
+  DEVICE_VENDOR := ASUS
+  DEVICE_MODEL := RT-AX52
+  DEVICE_DTS := mt7981b-asus-rt-ax52
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb  with-initrd | pad-to 64k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  #IMAGES += ubi-cleaner.itb
+  #IMAGE/ubi-cleaner.itb := x-uboot-bin mt7981_asus_rt-ax52-ubi-cleaner | lzma | \
+  #	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  #ARTIFACTS := ubi-cleaner.trx
+  #ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS := initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+endef
+TARGET_DEVICES += asus_rt-ax52
+
 define Device/asus_tuf-ax4200
   DEVICE_VENDOR := ASUS
   DEVICE_MODEL := TUF-AX4200
