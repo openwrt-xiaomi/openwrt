@@ -8,6 +8,8 @@ board_config_update
 case $board in
 asus,rt-ax52)
 	ucidef_set_led_netdev "eth1" "wan" "blue:wan" "eth1"
+asus,rt-ax57m)
+	ucidef_set_led_netdev "eth1" "wan" "blue:wan" "eth1"
 abt,asr3000)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan-2ghz" "phy0-ap0"
