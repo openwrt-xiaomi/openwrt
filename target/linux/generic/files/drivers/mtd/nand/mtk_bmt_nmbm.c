@@ -2200,7 +2200,7 @@ static int nmbm_attach(struct nmbm_instance *ni)
 	if (ni->signature.nand_size != bmtd.total_blks << bmtd.blk_shift ||
 	    ni->signature.block_size != bmtd.blk_size ||
 	    ni->signature.page_size != bmtd.pg_size ||
-	    ni->signature.spare_size != bmtd.mtd->oobsize) {
+	    ni->signature.spare_size > bmtd.mtd->oobsize) {
 		nlog_err(ni, "NMBM configuration mismatch\n");
 		return -EINVAL;
 	}
