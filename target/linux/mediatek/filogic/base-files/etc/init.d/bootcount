@@ -5,23 +5,32 @@ START=99
 
 boot() {
 	case $(board_name) in
-	xiaomi,mi-router-ax3000t)
+	xiaomi,mi-router-ax3000t|\
+	xiaomi,mi-router-wr30u-stock|\
+	xiaomi,redmi-router-ax6000-stock)
 		. /lib/upgrade/common.sh
 		[ "$(rootfs_type)" = "tmpfs" ] && \
 			logger "bootcount: initramfs mode detected, exit" && \
 			return 0
-		[ "$(fw_printenv -n flag_try_sys2_failed 2>&1)" = "8" ] && \
-			logger "bootcount: rd03 model detected, exit" && \
-			return 0
-		fw_setenv -s - <<-EOF
-			flag_boot_rootfs 0
-			flag_boot_success 1
-			flag_last_success 0
-			flag_ota_reboot 0
-			flag_try_sys1_failed 0
-			flag_try_sys2_failed 0
-		EOF
-		logger "bootcount: rd23 model detected, nvram was updated"
+		local boot_wait=$( fw_printenv boot_wait | cut -d = -f 2 )
+		[ "$boot_wait" != "on" ] && fw_setenv boot_wait on
+		local bootdelay=$( fw_printenv bootdelay | cut -d = -f 2 )
+		[ "$bootdelay" != "3" ] && fw_setenv bootdelay 3
+		local bootmenu_delay=$( fw_printenv bootmenu_delay | cut -d = -f 2 )
+		[ "$bootmenu_delay" != "5" ] && fw_setenv bootmenu_delay 5
+		local uart_en=$( fw_printenv uart_en | cut -d = -f 2 )
+		[ "$uart_en" != "1" ] && fw_setenv uart_en 1
+		local flag_boot_rootfs=$( fw_printenv flag_boot_rootfs | cut -d = -f 2 )
+		[ "$flag_boot_rootfs" != "0" ] && fw_setenv flag_boot_rootfs 0
+		local flag_last_success=$( fw_printenv flag_last_success | cut -d = -f 2 )
+		[ "$flag_last_success" != "0" ] && fw_setenv flag_last_success 0
+		local flag_boot_success=$( fw_printenv flag_boot_success | cut -d = -f 2 )
+		[ "$flag_boot_success" != "1" ] && fw_setenv flag_boot_success 1
+		local flag_try_sys1_failed=$( fw_printenv flag_try_sys1_failed | cut -d = -f 2 )
+		[ "$flag_try_sys1_failed" != "0" ] && fw_setenv flag_try_sys1_failed 0
+		local flag_try_sys2_failed=$( fw_printenv flag_try_sys2_failed | cut -d = -f 2 )
+		[ "$flag_try_sys2_failed" != "0" ] && fw_setenv flag_try_sys2_failed 0
+		logger "bootcount: nvram was updated"
 		;;
 	zyxel,ex5700-telenor)
 		fw_setenv uboot_bootcount 0
