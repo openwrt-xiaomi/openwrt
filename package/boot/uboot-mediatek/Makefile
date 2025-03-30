@@ -1002,6 +1002,8 @@ endif
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/$(UBOOT_IMAGE) $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-$(UBOOT_IMAGE)
+	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)/u-boot
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/arch/arm/dts/*.dtb $(STAGING_DIR_IMAGE)/u-boot/
 endef
 
 $(eval $(call BuildPackage/U-Boot))
