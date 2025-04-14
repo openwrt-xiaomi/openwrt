@@ -1,0 +1,54 @@
+From 5618ea25c85a951ec30b58b31d15fa6bf73d3608 Mon Sep 17 00:00:00 2001
+From: Oleg S <remittor@gmail.com>
+Date: Mon, 14 Apr 2025 16:08:45 +0300
+Subject: [PATCH] luci-base: package update based cache-busting string
+
+Problem:
+After updating the JS-part of any package, the user is forced to clear
+the browser cache.
+
+Fix:
+Each time a package is removed or installed, the contents of the
+"/lib/apk/db/installed" file are changed.
+This fix add the modification time of the "/lib/apk/db/installed" file
+to the version of the main LuCI package (for each js-file).
+
+Signed-off-by: Oleg S <remittor@gmail.com>
+---
+diff --git a/package/feeds/luci/luci-base/ucode/runtime.uc b/package/feeds/luci/luci-base/ucode/runtime.uc
+index f14bf74480..e5f11690df 100644
+--- a/package/feeds/luci/luci-base/ucode/runtime.uc
++++ b/package/feeds/luci/luci-base/ucode/runtime.uc
+@@ -1,7 +1,7 @@
+ // Copyright 2022 Jo-Philipp Wich <jo@mein.io>
+ // Licensed to the public under the Apache License 2.0.
+ 
+-import { access, basename } from 'fs';
++import { access, basename, stat } from 'fs';
+ import { cursor } from 'uci';
+ 
+ const template_directory = '/usr/share/ucode/luci/template';
+@@ -179,6 +179,7 @@ export default function(env) {
+ 	self.env.media = media;
+ 	self.env.theme = basename(media);
+ 	self.env.resource = uci.get('luci', 'main', 'resourcebase');
++	self.env.pkgs_update_time = stat('/lib/apk/db/installed')?.mtime ?? stat('/usr/lib/opkg/status')?.mtime ?? 0;
+ 	self.env.include = (...args) => self.render_any(...args);
+ 
+ 	return self;
+diff --git a/package/feeds/luci/luci-base/ucode/template/header.ut b/package/feeds/luci/luci-base/ucode/template/header.ut
+index 7a8462d61d..f23e5e45c8 100644
+--- a/package/feeds/luci/luci-base/ucode/template/header.ut
++++ b/package/feeds/luci/luci-base/ucode/template/header.ut
+@@ -7,7 +7,7 @@
+ -%}
+ 
+ <script src="{{ resource }}/promis.min.js"></script>
+-<script src="{{ resource }}/luci.js"></script>
++<script src="{{ resource }}/luci.js?v={# PKG_VERSION #}-{{ pkgs_update_time }}"></script>
+ <script>
+ 	L = new LuCI({{ replace(`${ {
+ 		media          : media,
+-- 
+2.28.0.windows.1
+
