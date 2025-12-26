@@ -3751,6 +3751,22 @@ define Device/zio_freezio
 endef
 TARGET_DEVICES += zio_freezio
 
+define Device/zyxel_keenetic-giga-iii
+  $(Device/dsa-migration)
+  $(Device/nand)
+  $(Device/uimage-lzma-loader)
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 51000k
+  DEVICE_VENDOR := Zyxel
+  DEVICE_MODEL := Keenetic Giga III
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb3 kmod-usb-ledtrig-usbport
+  KERNEL := $$(KERNEL/lzma-loader) | uImage-with-distver none KN-GIGA3
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+		check-size | pad-to $$(BLOCKSIZE) | zyimage-with-distver 0x2880
+endef
+TARGET_DEVICES += zyxel_keenetic-giga-iii
+
 define Device/zyxel_lte3301-plus
   $(Device/nand)
   DEVICE_VENDOR := Zyxel
