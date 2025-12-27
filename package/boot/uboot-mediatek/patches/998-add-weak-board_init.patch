@@ -1,0 +1,42 @@
+--- a/board/mediatek/mt7981/mt7981_rfb.c
++++ b/board/mediatek/mt7981/mt7981_rfb.c
+@@ -10,6 +10,11 @@
+ #ifndef CONFIG_RESET_BUTTON_LABEL
+ #define CONFIG_RESET_BUTTON_LABEL "reset"
+ #endif
++
++__weak int board_init(void)
++{
++	return 0;
++}
+ 
+ int board_late_init(void)
+ {
+--- a/board/mediatek/mt7986/mt7986_rfb.c
++++ b/board/mediatek/mt7986/mt7986_rfb.c
+@@ -10,6 +10,11 @@
+ #ifndef CONFIG_RESET_BUTTON_LABEL
+ #define CONFIG_RESET_BUTTON_LABEL "reset"
+ #endif
++
++__weak int board_init(void)
++{
++	return 0;
++}
+ 
+ int board_late_init(void)
+ {
+--- a/board/mediatek/mt7988/mt7988_rfb.c
++++ b/board/mediatek/mt7988/mt7988_rfb.c
+@@ -10,6 +10,11 @@
+ #ifndef CONFIG_RESET_BUTTON_LABEL
+ #define CONFIG_RESET_BUTTON_LABEL "reset"
+ #endif
++
++__weak int board_init(void)
++{
++	return 0;
++}
+ 
+ int board_late_init(void)
+ {
