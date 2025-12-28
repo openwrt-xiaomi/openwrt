@@ -220,7 +220,11 @@ sub parse_package_metadata($) {
 				buildtypes => [],
 				builddepends => [],
 			};
-			$srcpackage{$3} = $src;
+			if ($src->{makefile} =~ m{^feeds/_}) {
+				$srcpackage{$src->{path}} = $src;
+			} else {
+				$srcpackage{$src->{name}} = $src;
+			}
 			$override = "";
 			undef $pkg;
 		};
