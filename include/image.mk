@@ -282,7 +282,22 @@ $(eval $(foreach S,$(NAND_BLOCKSIZE),$(call Image/mkfs/jffs2-nand/template,$(S))
 define Image/mkfs/squashfs-common
 	$(STAGING_DIR_HOST)/bin/mksquashfs4 $(call mkfs_target_dir,$(1)) $@ \
 		-nopad -noappend -root-owned \
-		-comp $(SQUASHFSCOMP) $(SQUASHFSOPT)
+		-comp $(SQUASHFSCOMP) $(SQUASHFSOPT) ; \
+	XLOGMSG="=========== CHECK squashfs IMAGE ============" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+	XLOGMSG="IMAGE: "$@ ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+	XLOGMSG="  Size   : $$(stat -c %s $@) bytes" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+	XLOGMSG="  MD5    : $$(md5sum    $@ | cut -d' ' -f1)" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+	XLOGMSG="  SHA256 : $$(sha256sum $@ | cut -d' ' -f1)" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+	XOUTDIR=$@-testout ; \
+	if $(STAGING_DIR_HOST)/bin/fakeroot $(STAGING_DIR_HOST)/bin/unsquashfs4 -d $$XOUTDIR $@ ; then \
+		XLOGMSG=">>> squashfs check: OK" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+		rm -rf $$XOUTDIR ; \
+	else \
+		XLOGMSG=">>> squashfs check: FAILED" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ; \
+		rm -rf $$XOUTDIR ; \
+		exit 1 ; \
+	fi ; \
+	XLOGMSG="=========== CHECK FINISHED ==================" ; echo $$XLOGMSG >&8 || echo $$XLOGMSG ;
 endef
 
 ifeq ($(CONFIG_TARGET_ROOTFS_SECURITY_LABELS),y)
