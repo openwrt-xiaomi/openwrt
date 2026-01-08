@@ -271,9 +271,16 @@ define Device/asus_rt-ax52
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 ifeq ($(IB),)
+  #IMAGES += ubi-cleaner.itb
+  #IMAGE/ubi-cleaner.itb := x-uboot-bin mt7981_asus_rt-ax52-ubi-cleaner | lzma | \
+  #	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  #ARTIFACTS := ubi-cleaner.trx
+  #ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
   ARTIFACTS := initramfs.trx
   ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
 	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
 endif
 endef
 TARGET_DEVICES += asus_rt-ax52
@@ -290,6 +297,18 @@ define Device/asus_rt-ax57m
   KERNEL_INITRAMFS := kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb  with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ifeq ($(IB),)
+  #IMAGES += ubi-cleaner.itb
+  #IMAGE/ubi-cleaner.itb := x-uboot-bin mt7981_asus_rt-ax57m-ubi-cleaner | lzma | \
+  #	x-uboot-fit lzma 0x41e00000 $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  #ARTIFACTS := ubi-cleaner.trx
+  #ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS := initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+endif
 endef
 TARGET_DEVICES += asus_rt-ax57m
 
@@ -299,7 +318,24 @@ define Device/asus_rt-ax59u
   DEVICE_DTS := mt7986a-asus-rt-ax59u
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k  
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ifeq ($(IB),)
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-with-arm64hdr mt7986_rt-ax59u-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41DFFFC0 $(STAGING_DIR_IMAGE)/u-boot/mt7986-rt-ax59u-ubi-cleaner.dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+endif
 endef
 TARGET_DEVICES += asus_rt-ax59u
 
@@ -315,6 +351,18 @@ define Device/asus_tuf-ax4200
   KERNEL_INITRAMFS := kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ifeq ($(IB),)
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-with-arm64hdr mt7986_tuf-ax4200-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41DFFFC0 $(STAGING_DIR_IMAGE)/u-boot/mt7986-tuf-ax4200-ubi-cleaner.dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+endif
 endef
 TARGET_DEVICES += asus_tuf-ax4200
 
@@ -331,6 +379,11 @@ define Device/asus_tuf-ax4200q
         fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 ifeq ($(IB),)
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-with-arm64hdr mt7986_tuf-ax4200-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41DFFFC0 $(STAGING_DIR_IMAGE)/u-boot/mt7986-tuf-ax4200-ubi-cleaner.dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n TUF-AX4200 | pad-to 2564k
 ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
   ARTIFACTS := initramfs.trx
   ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
@@ -376,6 +429,18 @@ define Device/asus_tuf-ax6000
   KERNEL_INITRAMFS := kernel-bin | lzma | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ifeq ($(IB),)
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-with-arm64hdr mt7986_tuf-ax6000-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41DFFFC0 $(STAGING_DIR_IMAGE)/u-boot/mt7986-tuf-ax6000-ubi-cleaner.dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n $$(DEVICE_MODEL) | pad-to 2564k
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n $$(DEVICE_MODEL)
+endif
+endif
 endef
 TARGET_DEVICES += asus_tuf-ax6000
 
@@ -392,9 +457,21 @@ define Device/asus_zenwifi-bt8
   KERNEL_LOADADDR := 0x48080000
   IMAGES := sysupgrade.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ifeq ($(IB),)
+  IMAGES += ubi-cleaner.itb
+  IMAGE/ubi-cleaner.itb := x-uboot-with-arm64hdr mt7988_zenwifi-bt8-ubi-cleaner | lzma | \
+	x-uboot-fit lzma 0x41DFFFC0 $(STAGING_DIR_IMAGE)/u-boot/mt7988-zenwifi-bt8-ubi-cleaner.dtb
+  ARTIFACTS := ubi-cleaner.trx
+  ARTIFACT/ubi-cleaner.trx := append-image-stage ubi-cleaner.itb | asus-trx -v 3 -n BT8 -b 102 -e 65000 | pad-to 2564k
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
-  ARTIFACTS := factory.bin
+  ARTIFACTS += factory.bin
   ARTIFACT/factory.bin := append-image initramfs-kernel.bin | uImage lzma
+endif
+ifeq ($(CONFIG_TARGET_INITRAMFS_FORCE),y)
+  ARTIFACTS += initramfs.trx
+  ARTIFACT/initramfs.trx := append-image-stage initramfs-kernel.bin | \
+	uImage none | asus-trx -v 3 -n BT8 -b 102 -e 65000
+endif
 endif
 endef
 TARGET_DEVICES += asus_zenwifi-bt8
