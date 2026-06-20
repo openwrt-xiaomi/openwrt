@@ -247,7 +247,7 @@
 	max-link-speed = <1>;
 };
 
-&pcie_bridge0 {
+&pcie_bridge1 {
     wifi@0,0 {
         compatible = "qcom,ath10k";
         reg = <0x00010000 0 0 0 0>;
